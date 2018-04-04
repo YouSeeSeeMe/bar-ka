@@ -1,0 +1,181 @@
+<style lang="less">
+    .swiper{
+        height: 348rpx;
+        margin-top: 20rpx;
+        .slide-image{
+            width: 100%;
+            height: 100%;
+        }
+    }
+    .top{
+        width: 96%;
+        display: flex;
+        padding: 0 2%;
+        .search_box{
+            flex: 1;
+            input{
+                width: 100%;
+                height: 80prx;
+                line-height: 80rpx;
+                text-indent: 10rpx;
+                color: #333;
+                font-size: 26rpx;
+                border: 1px solid #333;
+                border-radius: 10rpx;
+            }
+        }
+        .personal{
+            width: 60rpx;
+            height: 60rpx;
+            background-color: #333;
+            border-radius: 100%;
+            margin-left: 30rpx;
+        }
+    }
+    .tab_box{
+        background: #fff;
+        padding: 0 120rpx;
+        .swiper_tab{
+            width:100%;
+            border-bottom:1rpx solid #eee;
+            text-align:center;
+            line-height:80rpx;
+            display:flex;
+            justify-content:space-between;
+            flex-wrap:wrap;
+            background:#fff;
+            .swiper-tab-list {
+                font-size:30rpx;
+                color:#777777;
+                padding:0 20rpx;
+                position:relative;
+            }
+            .active{
+                color:#eb6623;
+                border-bottom:5rpx solid #eb6623;
+            }
+
+        }
+    }
+</style>
+
+<template>
+    <view class="top">
+        <view class="search_box">
+            <input placeholder="搜索酒吧" auto-focus/>
+        </view>
+        <navigator class="personal" url="/pages/messages">
+            <i class="iconfont icon-message cfff"></i>
+        </navigator>
+    </view>
+    <view class="homePage">
+        <swiper class="swiper" indicator-active-color="{{indicatorActiveColor}}" indicator-dots="{{indicatorDots}}" autoplay="{{autoplay}}" interval="{{interval}}" duration="{{duration}}" circular="true">
+            <block wx:for="{{imgUrls}}" wx:key="key">
+                <swiper-item>
+                    <image src="{{item}}" class="slide-image"/>
+                </swiper-item>
+            </block>
+        </swiper>
+    </view>
+    
+    <!-- tab -->
+    <view class="tab_box">
+        <view class="swiper_tab">
+            <view class="tab_list {{currentTab==0 ? 'active' : ''}}"  @tap.stop="tabBar">附近酒吧</view>
+            <view class="tab_list {{currentTab==1 ? 'active' : ''}}"  @tap.stop="tabActivity">活动推荐</view>
+        </view>
+    </view>
+
+    <!-- 附近酒吧 -->
+    <nearBar wx:if="{{ currentTab==0 }}"></nearBar>
+    <!-- 活动推荐 -->
+    <activityRecommend wx:if="{{ currentTab == 1 }}"></activityRecommend>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import { Utils, API, HTTP, TIPS } from '@/common'
+
+  import nearBar from '../components/nearBar'
+  import activityRecommend from '../components/activityRecommend'
+
+  export default class Index extends wepy.page {
+    // 当前页面配置（或在 app.wpy 中配置）
+    config = {
+      navigationBarTitleText: 'SoundBus'
+    }
+
+    components = {
+        nearBar: nearBar,
+        activityRecommend: activityRecommend
+    }
+    // 模板初始绑定数据
+    data = {
+        list: [],
+        imgUrls: [
+          'http://img02.tooopen.com/images/20150928/tooopen_sy_143912755726.jpg',
+          'http://img06.tooopen.com/images/20160818/tooopen_sy_175866434296.jpg',
+          'http://img06.tooopen.com/images/20160818/tooopen_sy_175833047715.jpg'
+        ],
+        indicatorDots: true,
+        autoplay: true,
+        interval: 3000,
+        duration: 1000,
+        indicatorActiveColor: "#fff",
+        currentTab: 0 //附近酒吧
+    }
+    // 请求数据
+    request () {
+        let _this = this
+
+        let url = API.posts
+
+        // HTTP Test
+        HTTP.get(url).then((data) => {
+            _this.list = data
+            _this.$apply()
+
+            // TIPS Test
+            TIPS.alert('数据获取成功', () => {
+              console.log('数据获取成功回调')
+            })
+        }).catch((error) => {
+            console.log(error)
+        })
+    }
+    // 生命周期函数，页面加载
+    onLoad() {
+        let _this = this
+
+        // 获取当前时间戳
+        let getDate = Utils.now()
+        console.log('Time:', getDate)
+
+        // 获取1-5随机数
+        let getRandom = Utils.random(1, 5)
+        console.log('Random:', getRandom)
+        // 获取用户信息
+        console.log('获取用户信息:', _this.$root.$parent.globalData.userInfo)
+        // GET 接口获取数据
+        _this.request()
+
+        // 设置 Title
+        TIPS.setTitle('酒吧咖')
+    }
+
+    methods = {
+        tabBar() {
+            //console.log("附近酒吧");
+            let _this = this;
+            _this.currentTab = 0;
+            _this.showLoading = false;
+        },
+        tabActivity() {
+            //console.log("活动推荐");
+            let _this = this;
+            _this.currentTab = 1;
+            _this.showLoading = false;
+        }
+    }
+  }
+</script>

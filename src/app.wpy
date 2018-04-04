@@ -1,0 +1,50 @@
+<style lang="less">
+@import "./styles/base";
+</style>
+
+<script>
+import wepy from 'wepy'
+
+// 在 Page 页面实例中，可以通过 this.$parent 来访问 App 实例
+export default class extends wepy.app {
+  // config 对应 app.json 文件
+  config = {
+    pages: [
+      'pages/index'
+    ],
+    window: {
+      backgroundTextStyle: 'light',
+      navigationBarBackgroundColor: '#fff',
+      navigationBarTitleText: 'WeChat',
+      navigationBarTextStyle: 'black'
+    }
+  }
+  // 全局 Data (this.$root.$parent.globalData.userInfo)
+  globalData = {
+    userInfo: null
+  }
+  // API promise 化
+  constructor () {
+    super()
+    this.use('requestfix')
+  }
+  // 初始化只执行一次
+  onLaunch() {
+    // 获取用户信息
+    this.getUserInfo()
+  }
+  // 获取用户信息
+  getUserInfo(cb) {
+    const that = this
+    if (this.globalData.userInfo) {
+      return this.globalData.userInfo
+    }
+    wepy.getUserInfo({
+      success (res) {
+        that.globalData.userInfo = res.userInfo
+        cb && cb(res.userInfo)
+      }
+    })
+  }
+}
+</script>

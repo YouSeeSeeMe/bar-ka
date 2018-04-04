@@ -1,0 +1,29 @@
+<style lang="less">
+    .activityRecommend{
+        
+    }
+</style>
+<!--附近酒吧-->
+<template name="activity-Recommend">
+    <view class="activityRecommend">
+        <view class="list_box">
+            <navigator class="item_content" url="/pages/goods_detail?id={{item.goodsId}}">
+                <view class="bar-info">
+                    <view class="img-box">
+                      <image src="http://img02.tooopen.com/images/20150928/tooopen_sy_143912755726.jpg" class="img" />
+                    </view>
+                </view>
+                <view class="text-box">
+                    <view class="bar-name">三只猴子酒吧11</view>
+                    <view class="bar-adr">厦门思明区私密群私密群思明区</view>
+                </view>
+            </navigator>
+        </view>
+    </view>
+</template>
+<script>
+import wepy from 'wepy';
+export default class activityRecommend extends wepy.component {
+
+}
+</script>
