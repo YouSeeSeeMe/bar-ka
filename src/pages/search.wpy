@@ -5,20 +5,6 @@
     .homePage{
         width: 100%;
     }
-    .swiper{
-        width: 100%;
-        height: 340rpx;
-        margin-top: 20rpx;
-        .slide-image{
-            width: 640rpx;
-            height: 100%;
-            position: absolute;
-            left: 50%;
-            top: 0;
-            margin-left: -320rpx;
-            border-radius: 10rpx;
-        }
-    }
     .top{
         width: 100%;
         display: flex;
@@ -36,7 +22,7 @@
             height: 60prx;
             background-color: #333;
             border-radius: 100rpx;
-            .input-box{
+            input{
                 width: 100%;
                 margin-left: 24rpx;
                 height: 60prx;
@@ -55,15 +41,6 @@
                 background-size: 100% 100%;
                 margin-left: 20rpx;
             }
-        }
-        .personal{
-            width: 50rpx;
-            height: 50rpx;
-            border-radius: 100%;
-            margin-left: 22rpx;
-            background: url('https://static-wxapp.sunbar.cn/wxapp/personalicon@3x.png') no-repeat;
-            background-size: 100% 100%;
-            margin-right: 30rpx;
         }
     }
     .nearBarBox{
@@ -146,29 +123,15 @@
             
         }
     }
-
 </style>
 
 <template>
     <!-- 顶部搜索 -->
     <view class="top">
-        <navigator class="search_box" url="/pages/search">
+        <view class="search_box">
             <view class='i-search'></view>
-            <input class="input-box" placeholder="搜索酒吧"  disabled/>
-        </navigator>
-        <navigator class="personal" url="">
-            <i class="iconfont icon-message cfff"></i>
-        </navigator>
-    </view>
-    <!-- banner -->
-    <view class="homePage">
-        <swiper class="swiper" indicator-active-color="{{indicatorActiveColor}}" indicator-dots="{{indicatorDots}}" autoplay="{{autoplay}}" interval="{{interval}}" duration="{{duration}}" circular="true" previous-margin='{{ imgMargin }}' next-margin="{{ imgMargin }}" display-multiple-items="{{mulitple}}">
-            <block wx:for="{{imgUrls}}" wx:key="key">
-                <swiper-item>
-                    <image src="{{item}}" class="slide-image"/>
-                </swiper-item>
-            </block>
-        </swiper>
+            <input placeholder="搜索酒吧" />
+        </view>
     </view>
     <!-- 附近酒吧 -->
     <view class='nearBarBox'>
@@ -192,62 +155,28 @@
                 </navigator>
             </view>
         </view>
-        <!--加载更多时动画-->
-        <bottomLoadMore :show.sync="showLoading" message="正在加载"></bottomLoadMore>
-        <!--暂无数据显示-->
-        <placeholder :show.sync="is_empty" message="暂无发现数据"></placeholder>
     </view>
 </template>
 
 <script>
-import wepy from 'wepy'
-import { Utils, API, HTTP, TIPS } from '@/common'
+  import wepy from 'wepy'
+  import { Utils, API, HTTP, TIPS } from '@/common'
 
-import activityRecommend from '../components/activityRecommend'
-import bottomLoadMore from '../components/bottomLoadMore'
-import Placeholder from "../components/placeholder"
+  import nearBar from '../components/nearBar'
 
-import api from "@/common/myApi";
-
-export default class Index extends wepy.page {
+  export default class search extends wepy.page {
     // 当前页面配置（或在 app.wpy 中配置）
     config = {
       navigationBarTitleText: 'SoundBus'
     }
 
     components = {
-        activityRecommend: activityRecommend,
-        bottomLoadMore: bottomLoadMore,
-        placeholder: Placeholder
+        nearBar: nearBar
     }
     // 模板初始绑定数据
     data = {
         list: [],
-        //banner图
-        imgUrls: [
-          'http://img02.tooopen.com/images/20150928/tooopen_sy_143912755726.jpg',
-          'http://img06.tooopen.com/images/20160818/tooopen_sy_175866434296.jpg',
-          'http://img06.tooopen.com/images/20160818/tooopen_sy_175833047715.jpg'
-        ],
-        //是否显示面板指示点
-        indicatorDots: false, 
-        autoplay: true,
-        interval: 3000,
-        duration: 1000,
-        indicatorActiveColor: "#fff",
-        imgMargin: "40rpx",//banner图片间距
-        mulitple: "1",//同时显示的滑块数量
         focus: false, //输入框聚焦
-        //是否显示 底部loading
-        showLoading: false,
-        //当前页面
-        currentPage: 1,
-        //总页数
-        page_total: 0,
-        //防止重复加载
-        preventRepeatReuqest: false,
-        //暂无数据
-        is_empty: false,
     }
     // 请求数据
     request () {
@@ -286,56 +215,9 @@ export default class Index extends wepy.page {
 
         // 设置 Title
         TIPS.setTitle('酒吧咖')
-
-        // this.getGoodList();
-        //当前页面
-        this.currentPage = 1;
-        //总页数
-        this.page_total = 0;
-        //暂无数据
-        this.is_empty = false;
     }
 
     methods = {
-        onShareAppMessage: function(res) {
-          if (res.from === 'button') {
-            // 来自页面内转发按钮
-            console.log(res.target)
-          }
-          return {
-            title: '酒吧咖',
-            path: '/pages/index',
-            success: function(res) {
-              // 转发成功
-            },
-            fail: function(res) {
-              // 转发失败
-            }
-          }
-        },
     }
-    // async getGoodList() {
-      
-    // }
-
-    //加载更多 页面上拉触底事件的处理函数
-    onReachBottom() {
-      let that = this;
-      that.showLoading = true;
-      console.log(that.page_total + "===" + that.currentPage);
-      //判断总页数是否大于翻页数
-      if ((that.page_total) > that.currentPage) {
-        //防止重复加载
-        if (that.preventRepeatReuqest) {
-          return true;
-        }
-        that.preventRepeatReuqest = true;
-        that.currentPage++;
-        that.getGoodList(that.currentPage);
-        that.preventRepeatReuqest = false;
-      } else {
-        that.showLoading = false;
-      }
-    };
-}
+  }
 </script>

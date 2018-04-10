@@ -4,6 +4,20 @@
         margin-top: 20rpx;
         .list_box{
             width: 100%;
+            .item_content{
+                background: #0f141a;
+                border-radius: 10rpx;
+                .img-box{
+                    width: 682rpx;
+                    height: 199rpx;
+                    border-radius: 10rpx;
+                    overflow: hidden;
+                    .img{
+                        width: 100%;
+                        height: 100%;
+                    }
+                }
+            }
             .bar-info{
                 width: 100%;
                 .img{
@@ -13,20 +27,51 @@
                 }
             }
             .text-box{
-                width: 100%;
+                padding: 20rpx 0;
+                position: relative;
                 .bar-name{
-                    color: #333;
-                    font-size: 26rpx;
+                    width: 500rpx;
+                    color: #fff;
+                    font-size: 28rpx;
                     text-align: left;
+                    margin-left: 20rpx;
                 }
                 .bar-adr{
+                    width: 100%;
                     color: #333;
                     font-size: 26rpx;
                     text-align: left;
+                    margin-left: 20rpx;
+                    margin-top: 10rpx;
+                    display:flex;
+                    align-items:center;
+                    .icon-adr{
+                        margin-right: 10rpx;
+                    }
+                    .adr-text{
+                        width: 470rpx;
+                        display: inline-block;
+                        font-size: 22rpx;
+                        color: #4C5F84;
+                    }
+                }
+                .distance-number{
+                    width: 130rpx;
+                    height: 50rpx;
+                    text-align:center;
+                    line-height: 50rpx;
+                    font-size: 28rpx;
+                    color: #fff;
+                    border-left: 1rpx solid #252B38;
+                    position: absolute;
+                    right: 0;
+                    top: 30rpx;
                 }
             }
+            
         }
     }
+
 </style>
 <!--附近酒吧-->
 <template name="near-bar-list">
@@ -37,10 +82,14 @@
                     <view class="img-box">
                       <image src="http://img02.tooopen.com/images/20150928/tooopen_sy_143912755726.jpg" class="img" />
                     </view>
-                </view>
-                <view class="text-box">
-                    <view class="bar-name">三只猴子酒吧</view>
-                    <view class="bar-adr">厦门思明区私密群私密群思明区</view>
+                    <view class="text-box">
+                        <view class="bar-name ell">三只猴子酒吧</view>
+                        <view class="bar-adr">
+                            <view class="icon-adr"></view>
+                            <view class="adr-text ell">厦门思明区私密群私密群思明区</view>
+                        </view>
+                        <view class="distance-number">111.1km</view>
+                    </view>
                 </view>
             </navigator>
         </view>

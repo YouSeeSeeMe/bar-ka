@@ -10,18 +10,20 @@ export default class extends wepy.app {
   // config 对应 app.json 文件
   config = {
     pages: [
-      'pages/index'
+      'pages/index',
+      'pages/search'
     ],
     window: {
       backgroundTextStyle: 'light',
-      navigationBarBackgroundColor: '#fff',
+      navigationBarBackgroundColor: '#000',
       navigationBarTitleText: 'WeChat',
-      navigationBarTextStyle: 'black'
+      navigationBarTextStyle: 'light'
     }
   }
   // 全局 Data (this.$root.$parent.globalData.userInfo)
   globalData = {
-    userInfo: null
+    userInfo: null,
+    LocationInfo: null
   }
   // API promise 化
   constructor () {
@@ -32,6 +34,8 @@ export default class extends wepy.app {
   onLaunch() {
     // 获取用户信息
     this.getUserInfo()
+    //获取当前的地理位置
+    this.getLocation()
   }
   // 获取用户信息
   getUserInfo(cb) {
@@ -43,6 +47,20 @@ export default class extends wepy.app {
       success (res) {
         that.globalData.userInfo = res.userInfo
         cb && cb(res.userInfo)
+      }
+    })
+  }
+  //获取地理位置信息
+  getLocation(cb) {
+    const that = this
+    if (this.globalData.LocationInfo) {
+      return this.globalData.LocationInfo
+    }
+    wepy.getLocation({
+      success (res) {
+        console.log(res)
+        that.globalData.LocationInfo = res.LocationInfo
+        cb && cb(res.LocationInfo)
       }
     })
   }

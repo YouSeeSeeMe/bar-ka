@@ -1,4 +1,70 @@
+page {
+  font-family: PingFangSC-Regular;
+}
 .container {
   position: relative;
   background: #fff;
+}
+.icon-adr {
+  width: 19rpx;
+  height: 24rpx;
+  background: url('https://static-wxapp.sunbar.cn/wxapp/addresicon@3x.png') no-repeat;
+  background-size: 100% 100%;
+  display: inline-block;
+  vertical-align: middle;
+}
+.clearfix:before,
+.clearfix:after {
+  content: "";
+  display: table;
+}
+.clearfix:after {
+  clear: both;
+}
+.clearfix {
+  zoom: 1;
+}
+/* 单行文字溢出虚点显示*/
+.ell {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+/*  多行溢出隐藏 */
+.l-ell {
+  display: -webkit-box;
+  display: box;
+  word-wrap: break-word;
+  word-break: break-all;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-box-orient: vertical;
+  box-orient: vertical;
+  /* 几行隐藏 */
+  -ms-line-clamp: 2;
+  -moz-line-clamp: 2;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+.disbox {
+  display: -webkit-box;
+  display: -moz-box;
+  display: box;
+  -webkit-box-orient: horizontal;
+  -moz-box-orient: horizontal;
+  box-orient: horizontal;
+  -webkit-box-pack: justify;
+  -moz-box-pack: justify;
+  box-pack: justify;
+  -webkit-box-align: center;
+  -moz-box-align: center;
+  box-align: center;
+}
+.boxflex1 {
+  -webkit-box-flex: 1;
+  -moz-box-flex: 1;
+  box-flex: 1;
+}
+.disn {
+  display: none;
 }
