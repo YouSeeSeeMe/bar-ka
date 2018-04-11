@@ -58,9 +58,8 @@ export default class extends wepy.app {
     }
     wepy.getLocation({
       success (res) {
-        console.log(res)
-        that.globalData.LocationInfo = res.LocationInfo
-        cb && cb(res.LocationInfo)
+        that.globalData.LocationInfo = res
+        cb && cb(res)
       }
     })
   }

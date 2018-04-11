@@ -173,9 +173,9 @@
     <!-- 附近酒吧 -->
     <view class='nearBarBox'>
         <view class='title_h2'>附近的酒吧</view>
-        <view class="barsList">
+        <!-- <view class="barsList">
             <view class="list_box">
-                <navigator class="item_content" url="/pages/goods_detail?id={{item.goodsId}}">
+                <navigator class="item_content"  url="">
                     <view class="bar-info">
                         <view class="img-box">
                           <image src="http://img02.tooopen.com/images/20150928/tooopen_sy_143912755726.jpg" class="img" />
@@ -191,7 +191,8 @@
                     </view>
                 </navigator>
             </view>
-        </view>
+        </view> -->
+        <nearBar :barList.sync="barList"></nearBar>
         <!--加载更多时动画-->
         <bottomLoadMore :show.sync="showLoading" message="正在加载"></bottomLoadMore>
         <!--暂无数据显示-->
@@ -203,11 +204,12 @@
 import wepy from 'wepy'
 import { Utils, API, HTTP, TIPS } from '@/common'
 
+import nearBar from '../components/nearBar'
 import activityRecommend from '../components/activityRecommend'
 import bottomLoadMore from '../components/bottomLoadMore'
 import Placeholder from "../components/placeholder"
 
-import api from "@/common/myApi";
+
 
 export default class Index extends wepy.page {
     // 当前页面配置（或在 app.wpy 中配置）
@@ -216,13 +218,14 @@ export default class Index extends wepy.page {
     }
 
     components = {
+        nearBar: nearBar,
         activityRecommend: activityRecommend,
         bottomLoadMore: bottomLoadMore,
         placeholder: Placeholder
     }
     // 模板初始绑定数据
     data = {
-        list: [],
+        barList: [],
         //banner图
         imgUrls: [
           'http://img02.tooopen.com/images/20150928/tooopen_sy_143912755726.jpg',
@@ -248,6 +251,10 @@ export default class Index extends wepy.page {
         preventRepeatReuqest: false,
         //暂无数据
         is_empty: false,
+        //经度
+        latitude: null,
+        //纬度
+        longitude: null
     }
     // 请求数据
     request () {
@@ -272,22 +279,14 @@ export default class Index extends wepy.page {
     onLoad() {
         let _this = this
 
-        // 获取当前时间戳
-        let getDate = Utils.now()
-        console.log('Time:', getDate)
-
-        // 获取1-5随机数
-        let getRandom = Utils.random(1, 5)
-        console.log('Random:', getRandom)
-        // 获取用户信息
-        console.log('获取用户信息:', _this.$root.$parent.globalData.userInfo)
         // GET 接口获取数据
-        _this.request()
+        // _this.request()
 
         // 设置 Title
         TIPS.setTitle('酒吧咖')
 
-        // this.getGoodList();
+        //获取附近酒吧列表
+        this.getbarList();
         //当前页面
         this.currentPage = 1;
         //总页数
@@ -314,9 +313,41 @@ export default class Index extends wepy.page {
           }
         },
     }
-    // async getGoodList() {
-      
-    // }
+    getbarList(currentPage, size) {
+        let that = this;
+        let url = API.getBarList;
+        let latitude = '24.489183';
+        let longitude = '118.183623';
+        let params = {
+            latitude: latitude,
+            longitude: longitude,
+            isEnableJiubaka: true
+        };
+        let  headers = {
+            'authorization': 'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzeXN0ZW1faWQiOiJzdW5iYXIiLCJzY29wZSI6WyJvcGVuaWQiLCJ3cml0ZSIsInJlYWQiLCJzb3BfYmFzZSIsInNvcF91c2hvcCIsInNvcF9zdW5iYXIiLCJzb3BfdWFjIiwic29wX2FjY291bnQiLCJzb3BfcHVzaCIsInNvcF9zdW5iYXJfbWVyY2hhbnQiLCJzb3Bfc3VuYmFyX3dlY2hhdCIsInNvcF9zdW5iYXJfZnVuY3Rpb25hbF9tb2R1bGVzIiwiYmV0LWdhbWUiLCJzb3BfcGF5Iiwic29wX3NtcyIsImhpLWxpdmUiLCJzdW5iYXItYmFyIiwic29wX3N1bmJhcl9tZXNzYWdlX3Vwc3RyZWFtIiwic3VuYmFyLXdlY2hhdC1hcGkiXSwiZXhwIjoxNTIzNDQ4MzE3LCJhdXRob3JpdGllcyI6WyJST0xFX1RSVVNURURfQ0xJRU5UIl0sImp0aSI6IjFmMDk3MDA3LTU1M2EtNDgyOC05MzFjLWM1MTIxMDJjYTBiNSIsImNsaWVudF9pZCI6InN1bmJhcl9tZXJjaGFudCJ9.EFowGUkq1iF6Zm_uwIbD_jD8LQNooqrdt23INiF5eMr1jfk9EamDsnrYEeAYWECIxhpT32wSc-p0-TGJXJUawtNUEXBBwIV8xI7qB7_e9_XTY2rdenryGV6orXL1K_5mdvMtXq08PWytdeqBcVyhhRLOmWgmnfeI0s0nbTHq0mAgJ7NHcfIUAR8p8g6AfTt7ca6U5vjfnbjJ_IesR9r6BM6PUqo_Q8qd0atyDkukbuEWf4Uq6_X9dBG0e1u03XwM5NseR1_MewsTTMDdeK-4ni6t-86Ww6SkWosntbp3GSTM8Ood86J61Zg6PwvxN4ZmY20IxZyQdxo_rrsn2stTmA',
+            'cache-control':'no-cache',
+            'postman-token':'397713a1-2970-628f-ce80-a992e56881e2'
+        }
+
+
+      HTTP.get({url: url, params: params, headers:headers }).then((data) => {
+            if( data.code == "SUCCESS" ){
+                console.log('111');
+                console.log(data.payload.content)
+                that.barList = data.payload.content;
+                that.$apply();
+                // that.barList = data.payload.content
+                // setTimeout( function() {
+                //     console.log(that.barList);
+                // },2000 )
+            }
+      }).catch((error)=>{
+            console.log(error)
+      })
+
+      // that.showLoading = false;
+      // that.$apply();
+    }
 
     //加载更多 页面上拉触底事件的处理函数
     onReachBottom() {
