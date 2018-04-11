@@ -173,25 +173,7 @@
     <!-- 附近酒吧 -->
     <view class='nearBarBox'>
         <view class='title_h2'>附近的酒吧</view>
-        <!-- <view class="barsList">
-            <view class="list_box">
-                <navigator class="item_content"  url="">
-                    <view class="bar-info">
-                        <view class="img-box">
-                          <image src="http://img02.tooopen.com/images/20150928/tooopen_sy_143912755726.jpg" class="img" />
-                        </view>
-                        <view class="text-box">
-                            <view class="bar-name ell">三只猴子酒吧</view>
-                            <view class="bar-adr">
-                                <view class="icon-adr"></view>
-                                <view class="adr-text ell">厦门思明区私密群私密群思明区</view>
-                            </view>
-                            <view class="distance-number">111.1km</view>
-                        </view>
-                    </view>
-                </navigator>
-            </view>
-        </view> -->
+        <!-- 附近酒吧 -->
         <nearBar :barList.sync="barList"></nearBar>
         <!--加载更多时动画-->
         <bottomLoadMore :show.sync="showLoading" message="正在加载"></bottomLoadMore>

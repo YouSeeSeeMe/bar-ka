@@ -78,7 +78,7 @@
 <template name="near-bar-list">
     <view class="barsList">
         <view class="list_box">
-            <navigator class="item_content" wx:for="{{barList}}" wx:key="item" url="http://40.125.175.160:8081/sunbar-bar-service/bar/list/{{item.id}}">
+            <navigator class="item_content" wx:for="{{barList}}" wx:key="item" url="/pages/bar_detail/sunbar-bar-service/bar/{{item.id}}">
                 <view class="bar-info">
                     <view class="img-box">
                       <image src="{{item.avatar}}" class="img"/>
@@ -89,7 +89,8 @@
                             <view class="icon-adr"></view>
                             <view class="adr-text ell">{{item.name}}</view>
                         </view>
-                        <view class="distance-number">{{item.distance}}</view>
+                        <view class="distance-number">{{item.dotNum>=100?'dotbig':'dot'}}</view>
+                        <view class="distance-number">{{ item.distance >1000 ? parseFloat(item.distance/1000).toFixed(1) + 'km' : parseFloat(item.distance).toFixed(1) + 'm'}}</view>
                     </view>
                 </view>
             </navigator>
