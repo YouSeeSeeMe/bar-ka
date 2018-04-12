@@ -8,21 +8,20 @@
     .top{
         width: 100%;
         display: flex;
+        align-items:center;
         margin-top:30rpx;
         .search_box{
-            flex: 1;
             margin-left: 24rpx;
             position: relative;
-
             display:flex;
             align-items:center;
             border-radius:300rpx;
             color:#333;
-            width: 100%;
+            width: 625rpx;
             height: 60prx;
             background-color: #333;
             border-radius: 100rpx;
-            input{
+            .the-input{
                 width: 100%;
                 margin-left: 24rpx;
                 height: 60prx;
@@ -42,6 +41,15 @@
                 margin-left: 20rpx;
             }
         }
+        .btnCancal{
+            width: 100rpx;
+            height: 60rpx;
+            line-height: 60rpx;
+            text-align: center;
+            color : #fff;
+            font-size: 24rpx;
+        }
+
     }
     .nearBarBox{
         width: 682rpx;
@@ -123,6 +131,27 @@
             
         }
     }
+
+    .searchNo{
+        width: 100%;
+        .img{
+            width: 408rpx;
+            height: 219rpx;
+            display: block;
+            background: url('https://static-wxapp.sunbar.cn/wxapp/Fly@3x.png') no-repeat;
+            background-size: 100% 100%;
+            margin: 50rpx auto 0;
+        }
+        .text{
+            font-size: 32rpx;
+            color: #FFFFFF;
+            margin-top: 10rpx;
+            text-align: center;
+        }
+    }
+    .hidden{
+        display: none;
+    }
 </style>
 
 <template>
@@ -130,31 +159,38 @@
     <view class="top">
         <view class="search_box">
             <view class='i-search'></view>
-            <input placeholder="搜索酒吧" />
+            <input placeholder="搜索酒吧" focus class="the-input" value="{{search_input_value}}" confirm-type="search" bindconfirm="btnConfirm"/>
         </view>
+        <!-- <button class="btnCancal" @tap="goBack()" wx:if="{{search_input_value==''}}">取消</button> -->
+        <view class="btnCancal" @tap="goBack()">取消</view>
     </view>
     <!-- 附近酒吧 -->
-    <view class='nearBarBox'>
-        <view class='title_h2'>附近的酒吧</view>
-        <view class="barsList">
-            <view class="list_box">
-                <navigator class="item_content" url="/pages/goods_detail?id={{item.goodsId}}">
-                    <view class="bar-info">
-                        <view class="img-box">
-                          <image src="http://img02.tooopen.com/images/20150928/tooopen_sy_143912755726.jpg" class="img" />
-                        </view>
-                        <view class="text-box">
-                            <view class="bar-name ell">三只猴子酒吧</view>
-                            <view class="bar-adr">
-                                <view class="icon-adr"></view>
-                                <view class="adr-text ell">厦门思明区私密群私密群思明区</view>
+    <view wx:if="{{ searchBarList.length > 0 }}">
+        <view class='nearBarBox'>
+            <view class="barsList">
+                <view class="list_box">
+                    <navigator class="item_content" wx:for="{{searchBarList}}" wx:key="item" url="/pages/bar_detail?id={{item.id}}">
+                        <view class="bar-info">
+                            <view class="img-box">
+                              <image src="{{item.avatar}}" class="img" />
                             </view>
-                            <view class="distance-number">111.1km</view>
+                            <view class="text-box">
+                                <view class="bar-name ell">{{ item.name }}</view>
+                                <view class="bar-adr">
+                                    <view class="icon-adr"></view>
+                                    <view class="adr-text ell">{{ item.address.address }}</view>
+                                </view>
+                               <view class="distance-number">{{ (item.distance > 1000) ? (item.distance-item.distance%100)/1000  + 'km' : (item.distance*1000-item.distance*1000%100)/1000 + 'm' }}</view>
+                            </view>
                         </view>
-                    </view>
-                </navigator>
+                    </navigator>
+                </view>
             </view>
         </view>
+    </view>
+    <view wx:else class="searchNo {{ show ? '' : 'hidden' }}" >
+        <view class="img"></view>
+        <view class="text">未搜索到相关酒吧</view>
     </view>
 </template>
 
@@ -175,49 +211,72 @@
     }
     // 模板初始绑定数据
     data = {
-        list: [],
-        focus: false, //输入框聚焦
+        searchBarList: [],
+        focus: true, //输入框聚焦
+        //输入框值
+        search_input_value: '',
+        //是否显示 没有酒吧提示
+        show: false
     }
     // 请求数据
     request () {
-        let _this = this
-
-        let url = API.posts
-
-        // HTTP Test
-        HTTP.get(url).then((data) => {
-            _this.list = data
-            _this.$apply()
-
-            // TIPS Test
-            TIPS.alert('数据获取成功', () => {
-              console.log('数据获取成功回调')
-            })
-        }).catch((error) => {
-            console.log(error)
-        })
     }
     // 生命周期函数，页面加载
-    onLoad() {
-        let _this = this
-
-        // 获取当前时间戳
-        let getDate = Utils.now()
-        console.log('Time:', getDate)
-
-        // 获取1-5随机数
-        let getRandom = Utils.random(1, 5)
-        console.log('Random:', getRandom)
-        // 获取用户信息
-        console.log('获取用户信息:', _this.$root.$parent.globalData.userInfo)
-        // GET 接口获取数据
-        _this.request()
-
+    onLoad(option) {
+        let _this = this;
+        _this.searchBarList = [];
         // 设置 Title
         TIPS.setTitle('酒吧咖')
     }
 
     methods = {
+        //点击搜索
+        btnConfirm(e) {
+            console.log(e.detail.value)
+            // this.$emit('searchValue', this.search_input_value);
+            this.search_input_value = e.detail.value;
+            this.$apply();
+            this.doSearchBar(this.search_input_value)
+        },
+        goBack() {
+          wepy.navigateBack({
+            delta: 1 // 回退前 delta(默认为1) 页面
+          })
+        },
+    }
+    doSearchBar(val) {
+        let that = this;
+        let url = API.barSearch;
+        let barName = this.search_input_value;
+        let params = {
+            barName: barName,
+            isEnableJiubaka: true
+        };
+        let  headers = {
+            'authorization': 'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzeXN0ZW1faWQiOiJzdW5iYXIiLCJzY29wZSI6WyJvcGVuaWQiLCJ3cml0ZSIsInJlYWQiLCJzb3BfYmFzZSIsInNvcF91c2hvcCIsInNvcF9zdW5iYXIiLCJzb3BfdWFjIiwic29wX2FjY291bnQiLCJzb3BfcHVzaCIsInNvcF9zdW5iYXJfbWVyY2hhbnQiLCJzb3Bfc3VuYmFyX3dlY2hhdCIsInNvcF9zdW5iYXJfZnVuY3Rpb25hbF9tb2R1bGVzIiwiYmV0LWdhbWUiLCJzb3BfcGF5Iiwic29wX3NtcyIsImhpLWxpdmUiLCJzdW5iYXItYmFyIiwic29wX3N1bmJhcl9tZXNzYWdlX3Vwc3RyZWFtIiwic3VuYmFyLXdlY2hhdC1hcGkiXSwiZXhwIjoxNTIzNTM0NzE3LCJhdXRob3JpdGllcyI6WyJST0xFX1RSVVNURURfQ0xJRU5UIl0sImp0aSI6Ijc0MTIwZGYxLWFmNjItNDFlZi1iODg4LWFlYTFiNjM4NWQxNiIsImNsaWVudF9pZCI6InN1bmJhcl9tZXJjaGFudCJ9.IlX_C_nbl-tnJsyIC9Mnv6pSRXsLeFhqrHIPZC6hojcjT_OlpWvT9yGkJRRewXgcp8pJYSpwYI5eXqb86759MlZicdxRScSzGbD8oaCS_BYK-04iHG1gRZ8OumAV7YZRszmUXIeXF9j4QmNMbecuThuvyHbgtTpbbzqN65teHeFHhTA0L41aSdo6Pqyje-He1maal3SbKCr5cL2WELCoZ5AzdmBN7ttDwv7IH7WtjIwgFz9xSxg44CkHSYLZNGdql1zxAJS27sVW9pBGLZK47cku6gJkMUk5cX76ubt7eQF_QttDoqlmv3mgCtRjBDendCDE3C53l8eA4iHxJyKIZQ',
+            'cache-control':'no-cache',
+            'postman-token':'397713a1-2970-628f-ce80-a992e56881e2'
+        }
+
+
+      HTTP.get({url: url, params: params, headers:headers }).then((data) => {
+            if( data.code == "SUCCESS" ){
+                console.log('搜索到酒吧列表');
+                console.log(data.payload.content)
+                that.searchBarList = data.payload.content;
+                that.$apply();
+                if( that.searchBarList.length == 0 ){
+                    this.show = true;
+                    this.$apply();
+                    console.log('没有搜索到酒吧')
+                }
+            }
+      }).catch((error)=>{
+            console.log(error)
+      })
+
+      // that.showLoading = false;
+      // that.$apply();
     }
   }
 </script>
